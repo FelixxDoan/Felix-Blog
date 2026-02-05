@@ -5,7 +5,7 @@ import BlogPost from "../../../layouts/BlogPost.astro";
 export async function getStaticPaths() {
   const posts = (await getCollection("blog")).filter((p) => p.data.lang === "en");
   return posts.map((post) => ({
-    params: { slug: post.data.slug ?? post.id },
+    params: { slug: post.data.slug ?? post.id.replace(/^en\//, '') },
     props: post,
   }));
 }
@@ -15,7 +15,7 @@ type Props = CollectionEntry<"blog">;
 const post = Astro.props;
 const { Content } = await render(post);
 
-const switchUrl = `/vi/blog/${post.data.slug ?? post.id}`;
+const switchUrl = `/vi/blog/${post.data.slug ?? post.id.replace(/^en\//, '')}`;
 ---
 
 <BlogPost {...post.data} lang="en" switchUrl={switchUrl}>

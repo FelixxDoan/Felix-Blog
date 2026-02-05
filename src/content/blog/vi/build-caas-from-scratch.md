@@ -3,11 +3,10 @@ title: "Xây dựng Container-as-a-Service từ đầu: Thiết kế, triển kh
 pubDate: 2026-02-03
 description: "Từ đồ án tốt nghiệp đến một hệ thống CaaS chạy được: kiến trúc, quyết định kỹ thuật, thách thức và bài học."
 lang: "vi"
-slug: "build-caas-from-scratch"
 tags: ["docker", "caas", "gateway", "traefik", "microservices", "jwt", "redis", "minio", "postgres", "mongodb"]
 ---
 
-# Xây dựng Container-as-a-Service từ đầu: Thiết kế, triển khai và những bài học thực tế
+
 
 **Tác giả:** Felix Doan  
 **Repo:** https://github.com/FelixxDoan/Container-as-a-Service

@@ -1,0 +1,89 @@
+---
+interface Props {
+  lang: "vi" | "en";
+  viHref: string;
+  enHref: string;
+}
+
+const { lang, viHref, enHref } = Astro.props;
+---
+
+<div class="language-switcher" data-lang={lang}>
+  <div class="switcher-bg"></div>
+  <a href={viHref} class:list={["lang-option", { active: lang === "vi" }]} aria-label="Tiếng Việt">
+    <img src="/flags/vi.png" alt="VI" width="24" height="24" loading="lazy" />
+  </a>
+  <a href={enHref} class:list={["lang-option", { active: lang === "en" }]} aria-label="English">
+    <img src="/flags/en.png" alt="EN" width="24" height="24" loading="lazy" />
+  </a>
+</div>
+
+<style>
+  .language-switcher {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: #d2d2d4ff; /* Zinc-100 */
+    border-radius: 9999px;
+    padding: 4px;
+    gap: 0; /* Gap handled by padding/margins if needed, but 0 is better for pill calculation */
+    /* Removed specific border/shadow to cleaner look in dark mode or use vars */
+    /* box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03); */
+    /* border: 1px solid rgba(0,0,0,0.04); */
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .lang-option {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: opacity 0.2s ease;
+    opacity: 0.5;
+  }
+  
+  .lang-option:hover {
+    opacity: 0.8;
+  }
+
+  .lang-option.active {
+    opacity: 1;
+  }
+  
+  .lang-option img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    /* Optional: add a tiny border to flag if it blends with white */
+    /* box-shadow removed as requested */
+  }
+
+  /* The sliding background pill */
+  .switcher-bg {
+    position: absolute;
+    top: 4px; /* match padding of container */
+    left: 4px;
+    width: 36px;
+    height: 36px;
+    background: transparent; /* Removed white background */
+    border-radius: 50%;
+    box-shadow: none; /* Removed shadow */
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    z-index: 1;
+    /* Optional: Add a subtle indicator if needed, e.g. background: var(--bg-body); */
+  }
+
+  /* Animate based on data-attribute on parent */
+  .language-switcher[data-lang="en"] .switcher-bg {
+    transform: translateX(100%); /* Moves exactly one width over */
+  }
+  
+  /* Dark mode support if applicable, assuming light mode for now based on previous files */
+</style>

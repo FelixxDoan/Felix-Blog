@@ -3,11 +3,10 @@ title: "Building a Container-as-a-Service from Scratch: Architecture, Implementa
 pubDate: 2026-02-03
 description: "From a thesis project to a practical CaaS platform: architecture, engineering decisions, challenges, and lessons learned."
 lang: "en"
-slug: "build-caas-from-scratch"
 tags: ["docker", "caas", "gateway", "traefik", "microservices", "jwt", "redis", "minio", "postgres", "mongodb"]
 ---
 
-# Building a Container-as-a-Service from Scratch: Architecture, Implementation, and Real-World Lessons
+
 
 **Author:** Felix Doan  
 **Repository:** https://github.com/FelixxDoan/Container-as-a-Service
