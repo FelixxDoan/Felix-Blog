@@ -1,0 +1,152 @@
+---
+const { headings } = Astro.props;
+
+// Filter headings to only include h2 and h3
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+<nav class="toc">
+    <ul>
+        {
+            toc.map((heading) => (
+                <li class={`heading-${heading.depth}`}>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+            ))
+        }
+    </ul>
+</nav>
+
+<style>
+    .toc {
+        position: sticky;
+        top: 6rem; /* Adjust based on header height */
+        padding: 1rem;
+        font-size: 0.9em;
+        max-height: calc(100vh - 8rem);
+        overflow-y: auto;
+        /* Hide scrollbar for cleaner UI */
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+    }
+
+    .toc:hover {
+        scrollbar-color: rgb(var(--gray-light)) transparent;
+    }
+
+    .toc::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .toc::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .toc::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 20px;
+    }
+
+    .toc:hover::-webkit-scrollbar-thumb {
+        background-color: rgb(var(--gray-light));
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border-left: 2px solid #eee;
+    }
+
+    li {
+        margin-bottom: 0.5rem;
+    }
+
+    a {
+        text-decoration: none;
+        color: rgb(var(--gray));
+        display: block;
+        padding-left: 1rem;
+        transition: all 0.2s ease;
+        border-left: 2px solid transparent; /* Highlight indicator */
+        margin-left: -2px; /* Align with ul border */
+    }
+
+    a:hover {
+        color: rgb(var(--black));
+    }
+
+    .heading-2 a {
+        font-weight: 500;
+    }
+
+    .heading-3 a {
+        padding-left: 2rem;
+        font-size: 0.9em;
+    }
+
+    /* Active state (added by JS) */
+    /* Active state (added by JS) */
+    :global(.toc a.active) {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    const id = entry.target.getAttribute("id");
+                    if (entry.intersectionRatio > 0) {
+                        document
+                            .querySelector(`.toc a[href="#${id}"]`)
+                            ?.classList.add("active");
+                    } else {
+                        document
+                            .querySelector(`.toc a[href="#${id}"]`)
+                            ?.classList.remove("active");
+                    }
+                });
+            },
+            {
+                rootMargin: "0px 0px -80% 0px", // Trigger when heading is near top
+            },
+        );
+
+        // Track all headings that have an ID
+        document.querySelectorAll("h2[id], h3[id]").forEach((section) => {
+            observer.observe(section);
+        });
+
+        // Smooth scroll with offset for ToC links
+        document.querySelectorAll(".toc a").forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const href = link.getAttribute("href");
+                if (!href) return;
+
+                const targetId = href.substring(1);
+                const targetElement = document.getElementById(targetId);
+
+                if (targetElement) {
+                    const headerOffset = 100; // Adjust based on your header height + desired padding
+                    const elementPosition =
+                        targetElement.getBoundingClientRect().top;
+                    const offsetPosition =
+                        elementPosition + window.scrollY - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth",
+                    });
+
+                    // Update URL without jump
+                    history.pushState(null, "", href);
+                }
+            });
+        });
+    });
+</script>

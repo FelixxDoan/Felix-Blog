@@ -1,0 +1,30 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { isLang, languages, ui } from "../../i18n/ui";
+
+export async function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+if (!lang || !isLang(lang)) {
+  throw new Error(`Invalid language: ${lang}`);
+}
+const t = ui[lang];
+const blogUrl = `/${lang}/blog`;
+---
+<html lang={lang}>
+  <head><BaseHead title="Felix Blog" /></head>
+  <body>
+    <Header />
+    <main style="max-width:900px;margin:0 auto;padding:2rem 1rem;">
+      <h1>{t.home.title}</h1>
+      <p>
+        {t.home.intro} <a href={blogUrl}>{t.home.blogLink}</a>.
+      </p>
+    </main>
+    <Footer />
+  </body>
+</html>

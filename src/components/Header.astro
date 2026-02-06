@@ -1,8 +1,9 @@
----
+﻿---
 import { SITE_TITLE } from "../consts";
 import HeaderLink from "./HeaderLink.astro";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 import ThemeToggle from "./ThemeToggle.astro";
+import { ui } from "../i18n/ui";
 
 const pathname = Astro.url.pathname;
 
@@ -25,21 +26,23 @@ function swapLangPath(to: "vi" | "en") {
 const viHref = swapLangPath("vi");
 const enHref = swapLangPath("en");
 
-// Menu base theo ngôn ngữ hiện tại
-const base = isVI ? "/vi" : "/en";
+const lang = isVI ? "vi" : "en";
+const labels = ui[lang].nav;
+const base = `/${lang}`;
+
 ---
 
 <header>
   <nav>
     <h2><a href="/">{SITE_TITLE}</a></h2>
     <div class="internal-links">
-      <HeaderLink href={`${base}/`}>Home</HeaderLink>
-      <HeaderLink href={`${base}/blog`}>Blog</HeaderLink>
-      <HeaderLink href={`${base}/about`}>About</HeaderLink>
+      <HeaderLink href={`${base}/`}>{labels.home}</HeaderLink>
+      <HeaderLink href={`${base}/blog`}>{labels.blog}</HeaderLink>
+      <HeaderLink href={`${base}/about`}>{labels.about}</HeaderLink>
     </div>
     <div style="display: flex; align-items: center; gap: 10px;">
        <ThemeToggle />
-       <LanguageSwitcher lang={isVI ? "vi" : "en"} viHref={viHref} enHref={enHref} />
+       <LanguageSwitcher lang={lang} viHref={viHref} enHref={enHref} />
     </div>
 
     <div class="social-links">
@@ -108,3 +111,6 @@ const base = isVI ? "/vi" : "/en";
 
 
 </style>
+
+
+

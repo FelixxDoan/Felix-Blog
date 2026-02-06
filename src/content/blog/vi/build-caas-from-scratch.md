@@ -1,6 +1,7 @@
 ---
 title: "Xây dựng Container-as-a-Service từ đầu: Thiết kế, triển khai và những bài học thực tế"
 pubDate: 2026-02-03
+heroImage: '../_shared/build-caas-from-scratch/hero.png'
 description: "Từ đồ án tốt nghiệp đến một hệ thống CaaS chạy được: kiến trúc, quyết định kỹ thuật, thách thức và bài học."
 lang: "vi"
 tags: ["docker", "caas", "gateway", "traefik", "microservices", "jwt", "redis", "minio", "postgres", "mongodb"]
@@ -77,6 +78,7 @@ Việc đặt giới hạn giúp tôi tập trung vào “xương sống” củ
 ---
 
 ## 5. Kiến trúc tổng quan
+![Architech](../_shared/build-caas-from-scratch/architech.png)
 
 Hệ thống được thiết kế theo hướng microservices (mức cơ bản), gồm các thành phần chính:
 

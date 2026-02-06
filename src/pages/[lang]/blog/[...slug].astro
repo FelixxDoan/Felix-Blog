@@ -1,0 +1,78 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import BlogPost from "../../../layouts/BlogPost.astro";
+import { isLang } from "../../../i18n/ui";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  const sortedPosts = posts.sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  );
+
+  return sortedPosts.map((post) => {
+    const lang = post.data.lang;
+    const langPrefix = new RegExp(`^${lang}/`);
+    const slug = post.data.slug ?? post.id.replace(langPrefix, "");
+
+    // Filter posts by the same language to find prev/next
+    const langPosts = sortedPosts.filter((p) => p.data.lang === lang);
+    const currentIndex = langPosts.findIndex((p) => p.id === post.id);
+
+    // Next post is at index - 1 (because sorted DESC)
+    // Prev post is at index + 1
+    const nextPost =
+      currentIndex > 0
+        ? {
+            ...langPosts[currentIndex - 1],
+            slug:
+              langPosts[currentIndex - 1].data.slug ??
+              langPosts[currentIndex - 1].id.replace(langPrefix, ""),
+          }
+        : null;
+
+    const prevPost =
+      currentIndex < langPosts.length - 1
+        ? {
+            ...langPosts[currentIndex + 1],
+            slug:
+              langPosts[currentIndex + 1].data.slug ??
+              langPosts[currentIndex + 1].id.replace(langPrefix, ""),
+          }
+        : null;
+
+    return {
+      params: { lang, slug },
+      props: { post, prevPost, nextPost },
+    };
+  });
+}
+
+type Props = {
+  post: CollectionEntry<"blog">;
+  prevPost: (CollectionEntry<"blog"> & { slug: string }) | null;
+  nextPost: (CollectionEntry<"blog"> & { slug: string }) | null;
+};
+
+const { post, prevPost, nextPost } = Astro.props;
+const { lang } = Astro.params;
+
+if (!lang || !isLang(lang)) {
+  throw new Error(`Invalid language: ${lang}`);
+}
+
+const { Content, headings } = await render(post);
+const langPrefix = new RegExp(`^${lang}/`);
+const slug = post.data.slug ?? post.id.replace(langPrefix, "");
+const switchUrl = `/${lang === "vi" ? "en" : "vi"}/blog/${slug}`;
+---
+
+<BlogPost
+  {...post.data}
+  lang={lang}
+  switchUrl={switchUrl}
+  headings={headings}
+  prevPost={prevPost}
+  nextPost={nextPost}
+>
+  <Content />
+</BlogPost>

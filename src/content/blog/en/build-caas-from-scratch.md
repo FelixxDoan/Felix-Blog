@@ -1,6 +1,7 @@
 ---
 title: "Building a Container-as-a-Service from Scratch: Architecture, Implementation, and Real-World Lessons"
 pubDate: 2026-02-03
+heroImage: '../_shared/build-caas-from-scratch/hero.png'
 description: "From a thesis project to a practical CaaS platform: architecture, engineering decisions, challenges, and lessons learned."
 lang: "en"
 tags: ["docker", "caas", "gateway", "traefik", "microservices", "jwt", "redis", "minio", "postgres", "mongodb"]
@@ -77,9 +78,8 @@ These boundaries helped me focus on the “spine” of a CaaS platform: **auth �
 ---
 
 ## 5. High-Level Architecture
-
+![Architech](../_shared/build-caas-from-scratch/architech.png)
 The system follows a lightweight microservices-style architecture with these main components:
-
 - **Frontend:** the UI for teachers and students.
 - **API Gateway:** the single entry point; validates tokens and routes requests to the right service.
 - **Auth Service:** handles login and issues JWTs.

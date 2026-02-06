@@ -66,9 +66,13 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: var(--text-main);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 	font-size: 20px;
 	line-height: 1.7;
 	transition: background-color 0.3s ease, color 0.3s ease;
+	overflow-x: hidden;
 }
 
 main {
@@ -76,6 +80,7 @@ main {
 	max-width: calc(100% - 2em);
 	margin: auto;
 	padding: 3em 1em;
+	flex: 1;
 }
 
 h1,

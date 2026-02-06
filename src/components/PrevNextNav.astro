@@ -1,0 +1,83 @@
+---
+const { prevPost, nextPost } = Astro.props;
+---
+
+<nav class="prev-next-nav">
+    {
+        prevPost ? (
+            <a
+                href={`/${prevPost.lang}/blog/${prevPost.slug}/`}
+                class="nav-link prev"
+            >
+                <span class="label">← Previous</span>
+                <span class="title">{prevPost.data.title}</span>
+            </a>
+        ) : (
+            <div />
+        )
+    }
+    {
+        nextPost ? (
+            <a
+                href={`/${nextPost.lang}/blog/${nextPost.slug}/`}
+                class="nav-link next"
+            >
+                <span class="label">Next →</span>
+                <span class="title">{nextPost.data.title}</span>
+            </a>
+        ) : (
+            <div />
+        )
+    }
+</nav>
+
+<style>
+    .prev-next-nav {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+    }
+
+    @media (min-width: 768px) {
+        .prev-next-nav {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .nav-link {
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        padding: 1rem;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        transition:
+            border-color 0.2s,
+            box-shadow 0.2s;
+        color: inherit;
+    }
+
+    .nav-link:hover {
+        border-color: var(--accent);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-link.next {
+        text-align: right;
+    }
+
+    .label {
+        font-size: 0.85rem;
+        color: rgb(var(--gray));
+        margin-bottom: 0.5rem;
+    }
+
+    .title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+</style>

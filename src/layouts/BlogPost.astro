@@ -1,18 +1,36 @@
----
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+﻿---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import Header from "../components/Header.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import ReadingProgress from "../components/ReadingProgress.astro";
+import ScrollToTop from "../components/ScrollToTop.astro";
+import PrevNextNav from "../components/PrevNextNav.astro";
+import type { MarkdownHeading } from "astro";
 
-type Props = CollectionEntry<'blog'>['data'] & {
-  lang?: "vi" | "en";
-  switchUrl?: string;
+type Props = CollectionEntry<"blog">["data"] & {
+	lang?: "vi" | "en";
+	switchUrl?: string;
+	headings?: MarkdownHeading[];
+	prevPost?: (CollectionEntry<"blog"> & { slug: string }) | null;
+	nextPost?: (CollectionEntry<"blog"> & { slug: string }) | null;
 };
 
-
-const { title, description, pubDate, updatedDate, heroImage, lang, switchUrl } = Astro.props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	lang,
+	switchUrl,
+	headings,
+	prevPost,
+	nextPost,
+} = Astro.props;
 const htmlLang = lang ?? "en";
 const switchLabel = htmlLang === "vi" ? "Read in English" : "Đọc tiếng Việt";
 ---
@@ -22,10 +40,41 @@ const switchLabel = htmlLang === "vi" ? "Read in English" : "Đọc tiếng Vi�
 		<BaseHead title={title} description={description} />
 		<style>
 			main {
-				width: calc(100% - 2em);
+				width: 100%;
 				max-width: 100%;
 				margin: 0;
 			}
+
+			/* New Layout Styles */
+			.post-container {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 2rem;
+				max-width: 1400px; /* Wider container for 3 columns */
+				margin: 0 auto;
+				padding: 0 1rem;
+			}
+
+			@media (min-width: 1024px) {
+				.post-container {
+					grid-template-columns: 240px minmax(0, 1fr) 240px;
+					padding: 0 2rem;
+				}
+			}
+
+			.left-sidebar,
+			.right-sidebar {
+				display: none;
+			}
+
+			@media (min-width: 1024px) {
+				.left-sidebar,
+				.right-sidebar {
+					display: block;
+					position: relative;
+				}
+			}
+
 			.hero-image {
 				width: 100%;
 			}
@@ -36,15 +85,15 @@ const switchLabel = htmlLang === "vi" ? "Read in English" : "Đọc tiếng Vi�
 				box-shadow: var(--box-shadow);
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
+				width: 100%;
+				max-width: 720px; /* Keep content readable */
 				margin: auto;
 				padding: 1em;
 				color: rgb(var(--gray-dark));
 			}
 			.lang-switch {
-				width: 720px;
-				max-width: calc(100% - 2em);
+				width: 100%;
+				max-width: 720px;
 				margin: 1rem auto 0;
 				padding: 0 1em;
 				text-align: right;
@@ -73,38 +122,67 @@ const switchLabel = htmlLang === "vi" ? "Read in English" : "Đọc tiếng Vi�
 	</head>
 
 	<body>
+		<ReadingProgress />
 		<Header />
 		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
+			<div class="post-container">
+				<aside class="left-sidebar">
+					{
+						headings && headings.length > 0 && (
+							<TableOfContents headings={headings} />
+						)
+					}
+				</aside>
 
-				{switchUrl && (
-					<nav class="lang-switch">
-						<a href={switchUrl}>{switchLabel}</a>
-					</nav>
-				)}
-
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+				<article>
+					<div class="hero-image">
+						{
+							heroImage && (
+								<Image
+									width={1020}
+									height={510}
+									src={heroImage}
+									alt=""
+								/>
+							)
+						}
 					</div>
-					<slot />
-				</div>
-			</article>
+
+					{
+						switchUrl && (
+							<nav class="lang-switch">
+								<a href={switchUrl}>{switchLabel}</a>
+							</nav>
+						)
+					}
+
+					<div class="prose">
+						<div class="title">
+							<div class="date">
+								<FormattedDate date={pubDate} />
+								{
+									updatedDate && (
+										<div class="last-updated-on">
+											Last updated on{" "}
+											<FormattedDate date={updatedDate} />
+										</div>
+									)
+								}
+							</div>
+							<h1>{title}</h1>
+							<hr />
+						</div>
+						<slot />
+						<PrevNextNav prevPost={prevPost} nextPost={nextPost} />
+					</div>
+				</article>
+
+				<aside class="right-sidebar">
+					<!-- Empty right column as requested -->
+				</aside>
+			</div>
 		</main>
+		<ScrollToTop />
 		<Footer />
 	</body>
 </html>

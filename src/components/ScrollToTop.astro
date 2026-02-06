@@ -1,0 +1,75 @@
+<button
+    id="scroll-to-top"
+    aria-label="Scroll to top"
+    class="scroll-to-top hidden"
+>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        width="24"
+        height="24"
+    >
+        <path d="M12 19V5"></path>
+        <path d="M5 12l7-7 7 7"></path>
+    </svg>
+</button>
+
+<style>
+    .scroll-to-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background-color: rgb(var(--gray-light));
+        color: rgb(var(--gray));
+        border: none;
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+
+    .scroll-to-top:hover {
+        background-color: var(--accent);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+    }
+</style>
+
+<script>
+    const scrollToTopBtn = document.getElementById("scroll-to-top");
+
+    if (scrollToTopBtn) {
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 400) {
+                scrollToTopBtn.classList.remove("hidden");
+            } else {
+                scrollToTopBtn.classList.add("hidden");
+            }
+        });
+
+        scrollToTopBtn.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        });
+    }
+</script>
