@@ -12,7 +12,12 @@ export async function getStaticPaths() {
   return sortedPosts.map((post) => {
     const lang = post.data.lang;
     const langPrefix = new RegExp(`^${lang}/`);
-    const slug = post.data.slug ?? post.id.replace(langPrefix, "");
+    const slug =
+      post.data.slug ??
+      post.id
+        .replace(/\\/g, "/")
+        .replace(langPrefix, "")
+        .replace(/\.[^/.]+$/, "");
 
     // Filter posts by the same language to find prev/next
     const langPosts = sortedPosts.filter((p) => p.data.lang === lang);
@@ -26,7 +31,10 @@ export async function getStaticPaths() {
             ...langPosts[currentIndex - 1],
             slug:
               langPosts[currentIndex - 1].data.slug ??
-              langPosts[currentIndex - 1].id.replace(langPrefix, ""),
+              langPosts[currentIndex - 1].id
+                .replace(/\\/g, "/")
+                .replace(langPrefix, "")
+                .replace(/\.[^/.]+$/, ""),
           }
         : null;
 
@@ -36,7 +44,10 @@ export async function getStaticPaths() {
             ...langPosts[currentIndex + 1],
             slug:
               langPosts[currentIndex + 1].data.slug ??
-              langPosts[currentIndex + 1].id.replace(langPrefix, ""),
+              langPosts[currentIndex + 1].id
+                .replace(/\\/g, "/")
+                .replace(langPrefix, "")
+                .replace(/\.[^/.]+$/, ""),
           }
         : null;
 
@@ -62,7 +73,12 @@ if (!lang || !isLang(lang)) {
 
 const { Content, headings } = await render(post);
 const langPrefix = new RegExp(`^${lang}/`);
-const slug = post.data.slug ?? post.id.replace(langPrefix, "");
+const slug =
+  post.data.slug ??
+  post.id
+    .replace(/\\/g, "/")
+    .replace(langPrefix, "")
+    .replace(/\.[^/.]+$/, "");
 const switchUrl = `/${lang === "vi" ? "en" : "vi"}/blog/${slug}`;
 ---
 

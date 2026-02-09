@@ -6,7 +6,7 @@ const { prevPost, nextPost } = Astro.props;
     {
         prevPost ? (
             <a
-                href={`/${prevPost.lang}/blog/${prevPost.slug}/`}
+                href={`/${prevPost.data.lang}/blog/${prevPost.slug}/`}
                 class="nav-link prev"
             >
                 <span class="label">← Previous</span>
