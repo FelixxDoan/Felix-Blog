@@ -173,7 +173,11 @@ const switchLabel = htmlLang === "vi" ? "Read in English" : "Đọc tiếng Vi�
 							<hr />
 						</div>
 						<slot />
-						<PrevNextNav prevPost={prevPost} nextPost={nextPost} />
+						<PrevNextNav
+							lang={htmlLang}
+							prevPost={prevPost}
+							nextPost={nextPost}
+						/>
 					</div>
 				</article>
 
