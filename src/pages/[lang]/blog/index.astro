@@ -103,7 +103,12 @@ const langPrefix = new RegExp(`^${lang}/`);
         <ul>
           {
             posts.map((post) => {
-              const slug = post.data.slug ?? post.id.replace(langPrefix, "");
+              const slug =
+                post.data.slug ??
+                post.id
+                  .replace(/\\/g, "/")
+                  .replace(langPrefix, "")
+                  .replace(/\.[^/.]+$/, "");
               return (
                 <li>
                   <a href={`/${lang}/blog/${slug}/`}>
