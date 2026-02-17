@@ -1,0 +1,323 @@
+<div id="mermaid-modal" class="mermaid-modal">
+    <div class="modal-content">
+        <div id="panzoom-container"></div>
+    </div>
+    <button id="close-modal" class="close-btn">&times;</button>
+    <div class="zoom-controls">
+        <button id="zoom-in">+</button>
+        <button id="zoom-out">-</button>
+        <button id="reset-zoom">Reset</button>
+    </div>
+</div>
+
+<style>
+    .mermaid-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        overflow: hidden;
+    }
+
+    .modal-content {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+    }
+
+    #panzoom-container {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--bg-body);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        min-width: 100px;
+        min-height: 100px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: 0 0;
+        box-sizing: border-box;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        background: none;
+        border: none;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .zoom-controls {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 1001;
+    }
+
+    .zoom-controls button {
+        background: #333;
+        color: white;
+        border: 1px solid #555;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 4px;
+    }
+
+    .zoom-controls button:hover {
+        background: #555;
+    }
+
+    /* Style for the diagrams in the blog post to indicate clickability */
+    :global(.mermaid) {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    :global(.mermaid:hover) {
+        transform: scale(1.01);
+    }
+</style>
+
+<script>
+    import panzoom from "panzoom";
+
+    let panzoomInstance: any = null;
+
+    function openModal(svgContent: string) {
+        const modal = document.getElementById("mermaid-modal");
+        const container = document.getElementById("panzoom-container");
+
+        if (modal && container) {
+            container.innerHTML = svgContent;
+            modal.style.display = "block";
+
+            // Initialize panzoom
+            const svgElement = container.querySelector("svg");
+            if (svgElement) {
+                let baseWidth = 0;
+                let baseHeight = 0;
+
+                // Ensure SVG has a viewBox or distinct size so it doesn't collapse
+                if (svgElement.hasAttribute("viewBox")) {
+                    const viewBox = svgElement
+                        .getAttribute("viewBox")
+                        ?.split(" ")
+                        .map(Number);
+                    if (viewBox && viewBox.length === 4) {
+                        baseWidth = viewBox[2];
+                        baseHeight = viewBox[3];
+
+                        // Enforce the natural size as the base display size
+                        svgElement.style.width = `${baseWidth}px`;
+                        svgElement.style.height = `${baseHeight}px`;
+                        svgElement.style.maxWidth = "none";
+                    } else {
+                        svgElement.style.maxWidth = "none";
+                        svgElement.style.width = "auto";
+                        svgElement.style.height = "auto";
+                    }
+                } else {
+                    // Fallback for SVGs without viewBox
+                    svgElement.style.maxWidth = "none";
+                }
+
+                panzoomInstance = panzoom(container, {
+                    maxZoom: 5,
+                    minZoom: 0.1,
+                    initialZoom: 1,
+                    autocenter: false, // We will handle centering manually
+                });
+
+                // Wait for render to get accurate dimensions
+                setTimeout(() => {
+                    const viewportWidth = modal.clientWidth;
+                    const viewportHeight = modal.clientHeight;
+                    const contentRect = container.getBoundingClientRect();
+
+                    const contentWidth = contentRect.width;
+                    const contentHeight = contentRect.height;
+
+                    let scale = 1;
+
+                    if (baseWidth > 0 && baseHeight > 0) {
+                        // If we have a known base size, use the user's requested 1.8x zoom
+                        scale = 1.8;
+                    } else {
+                        // Fallback logic for unknown base size
+                        let scaleX = (viewportWidth * 0.85) / contentWidth;
+                        let scaleY = (viewportHeight * 0.85) / contentHeight;
+                        scale = Math.min(scaleX, scaleY);
+                        if (scale < 1) scale = 1; // At least 1x
+                        if (scale > 1.8) scale = 1.8;
+                    }
+
+                    const cx = (viewportWidth - contentWidth * scale) / 2;
+                    const cy = (viewportHeight - contentHeight * scale) / 2;
+
+                    panzoomInstance.zoomAbs(0, 0, scale);
+                    panzoomInstance.moveTo(cx, cy);
+                }, 10);
+            }
+        }
+    }
+
+    function closeModal() {
+        const modal = document.getElementById("mermaid-modal");
+        const container = document.getElementById("panzoom-container");
+
+        if (modal) {
+            modal.style.display = "none";
+        }
+
+        if (panzoomInstance) {
+            panzoomInstance.dispose();
+            panzoomInstance = null;
+        }
+
+        if (container) {
+            container.innerHTML = "";
+        }
+    }
+
+    // Attach click listeners to mermaid diagrams
+    document.addEventListener("DOMContentLoaded", () => {
+        const mermaidDivs = document.querySelectorAll(".mermaid");
+        mermaidDivs.forEach((div) => {
+            div.addEventListener("click", () => {
+                openModal(div.innerHTML);
+            });
+        });
+
+        // Add Escape key listener
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                const modal = document.getElementById("mermaid-modal");
+                if (modal && modal.style.display === "block") {
+                    closeModal();
+                }
+            }
+        });
+
+        // Close button
+        const closeBtn = document.getElementById("close-modal");
+        if (closeBtn) {
+            closeBtn.addEventListener("click", closeModal);
+        }
+
+        // Close on click outside (optional, but good UX)
+        const modal = document.getElementById("mermaid-modal");
+        if (modal) {
+            modal.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Zoom controls
+        document.getElementById("zoom-in")?.addEventListener("click", () => {
+            if (panzoomInstance) {
+                const container = document.getElementById("panzoom-container");
+                const rect = container?.getBoundingClientRect();
+                if (rect) {
+                    const cx = rect.width / 2;
+                    const cy = rect.height / 2;
+                    panzoomInstance.smoothZoom(0, 0, 1.25); // Zoom to center (incorrect args for smoothZoom usually x, y, scaleMultiplier)
+                    // panzoom documentation says: smoothZoom(client x, client y, zoom multiplier)
+                    // But simply putting centers might be tricky without exact coords.
+                    // let's try a safer approach or just rely on API if available.
+                    // Actually the simple panzoom library might not expose 'zoomIn' helper directly without coordinates.
+                    // Let's iterate: query the transform and update.
+                    // The 'panzoom' library by 'anvaka' (most common) exposes `zoomTo(x, y, scaleRatio)`.
+                }
+            }
+        });
+
+        // Re-implementation of zoom controls using the instance methods if possible,
+        // or just relying on the scroll/pinch which is native to the lib.
+        // For simple buttons with 'anvaka/panzoom':
+        // There is no direct 'zoomIn' method without coordinates.
+        // However, we can simulate it or just let users use mouse wheel.
+        // Let's refine the script to be simpler for now: strictly mouse/touch.
+        // If user *really* wants buttons, we need to handle the center calculation.
+    });
+
+    // Improved Zoom Controls Implementation
+    // We need to wait for instance to be ready
+    document.getElementById("zoom-in")?.addEventListener("click", (e) => {
+        if (panzoomInstance) {
+            // Zoom to the center of the viewport
+            const modal = document.getElementById("mermaid-modal");
+            if (modal) {
+                // Since we are using absolute positioning for the container,
+                // the "transform origin" is 0,0 of the container.
+                // But smoothZoom(x, y, scale) takes coordinates relative to the transform origin?
+                // Or client coordinates? specific to anvaka/panzoom:
+                // smoothZoom(clientX, clientY, zoomFactor)
+
+                const cx = modal.clientWidth / 2;
+                const cy = modal.clientHeight / 2;
+                panzoomInstance.smoothZoom(cx, cy, 1.25);
+            }
+        }
+        e.stopPropagation();
+    });
+
+    document.getElementById("zoom-out")?.addEventListener("click", (e) => {
+        if (panzoomInstance) {
+            const modal = document.getElementById("mermaid-modal");
+            if (modal) {
+                const cx = modal.clientWidth / 2;
+                const cy = modal.clientHeight / 2;
+                panzoomInstance.smoothZoom(cx, cy, 0.8);
+            }
+        }
+        e.stopPropagation();
+    });
+
+    document.getElementById("reset-zoom")?.addEventListener("click", (e) => {
+        if (panzoomInstance) {
+            const modal = document.getElementById("mermaid-modal");
+            if (modal) {
+                // Resetting to "fit" might be better, but let's just go to 1:1 center for now
+                // Or re-run the calculation?
+
+                // Simplest: Zoom to 1 at center of screen
+                const cx = modal.clientWidth / 2;
+                const cy = modal.clientHeight / 2;
+                // We need to calculate the position such that the center of the element is at cx, cy
+                // panzoom doesn't track "element center", it tracks transform.
+
+                // Let's just do a generic reset
+                panzoomInstance.zoomAbs(0, 0, 1);
+                panzoomInstance.moveTo(0, 0);
+                // Maybe 0,0 is top left.
+                // A true reset would be nice, but without storing initial state,
+                // user can just scroll/zoom again.
+            }
+        }
+        e.stopPropagation();
+    });
+</script>

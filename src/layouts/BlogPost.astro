@@ -9,6 +9,7 @@ import TableOfContents from "../components/TableOfContents.astro";
 import ReadingProgress from "../components/ReadingProgress.astro";
 import ScrollToTop from "../components/ScrollToTop.astro";
 import PrevNextNav from "../components/PrevNextNav.astro";
+import MermaidZoom from "../components/MermaidZoom.astro";
 import type { MarkdownHeading } from "astro";
 
 type Props = CollectionEntry<"blog">["data"] & {
@@ -187,6 +188,7 @@ const switchLabel = htmlLang === "vi" ? "Read in English" : "Đọc tiếng Vi�
 			</div>
 		</main>
 		<ScrollToTop />
+		<MermaidZoom />
 		<Footer />
 	</body>
 </html>
