@@ -110,11 +110,11 @@ Khi bắt đầu benchmark, mình nhận ra một chi tiết nhỏ nhưng ảnh 
 
 **Kịch bản 1 — Warm restart (giữ volume):**
 
-![Warm restart](../_shared/caas-from-scratch/post5/warm.png)
+![Warm restart](../_shared/caas-from-scratch/post5/Warm.png)
 
 **Kịch bản 2 — Wipe volumes (reset sạch):**
 
-![Wipe volumes](../_shared/caas-from-scratch/post5/wipe.png)
+![Wipe volumes](../_shared/caas-from-scratch/post5/Wipe.png)
 
 > Bài học rút ra: khi benchmark dev loop, mình luôn ghi rõ “có `-v` hay không”, vì đây là hai câu chuyện khác nhau: **warm restart** vs **fresh bootstrap**.
 

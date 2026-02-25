@@ -111,11 +111,11 @@ When I started benchmarking, I noticed a small detail that changes everything: *
 
 **Scenario 1 — Warm restart (keep volumes):**
 
-![Warm restart](../_shared/caas-from-scratch/post5/warm.png)
+![Warm restart](../_shared/caas-from-scratch/post5/Warm.png)
 
 **Scenario 2 — Wipe volumes (fresh bootstrap):**
 
-![Wipe volumes](../_shared/caas-from-scratch/post5/wipe.png)
+![Wipe volumes](../_shared/caas-from-scratch/post5/Wipe.png)
 
 > Lesson learned: when benchmarking a dev loop, I always state whether `-v` was used, because these are two different stories: **warm restart** vs **fresh bootstrap**.
 
